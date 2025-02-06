@@ -1,5 +1,5 @@
 from llama_index.core import VectorStoreIndex
-from llama_index.core import ServiceContext
+from llama_index.core import Settings
 from llama_index.embeddings.gemini import GeminiEmbedding
 
 import sys
@@ -17,11 +17,13 @@ def download_gemini_embedding(model, document):
     try:
         logging.info("")
         gemini_embed_model = GeminiEmbedding(model_name="models/embedding-001")
-        service_context = ServiceContext.from_defaults(llm=model, embed_model=gemini_embed_model, chunk_size=800,
-                                                       chunk_overlap=20)
+        Settings.llm = model
+        Settings.embed_model = gemini_embed_model
+        Settings.chunk_size = 800
+        Settings.chunk_overlap = 20
 
         logging.info("")
-        index = VectorStoreIndex.from_documents(document, service_context=service_context)
+        index = VectorStoreIndex.from_documents(document, settings=Settings)
         index.storage_context.persist()
 
         logging.info("")
